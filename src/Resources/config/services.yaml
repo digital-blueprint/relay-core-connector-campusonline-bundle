@@ -1,1 +1,8 @@
 services:
+  Dbp\Relay\CoreConnectorCampusonlineBundle\Service\AuthorizationDataProvider:
+    autowire: true
+    autoconfigure: true
+
+  Dbp\Relay\CoreConnectorCampusonlineBundle\Service\OrganizationDataProvider:
+    autowire: true
+    autoconfigure: true
