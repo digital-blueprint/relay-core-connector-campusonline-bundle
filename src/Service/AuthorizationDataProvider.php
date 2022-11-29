@@ -50,7 +50,8 @@ class AuthorizationDataProvider implements AuthorizationDataProviderInterface, L
         foreach ($orgIds as $org) {
             $name = $org['name'];
             $rootId = $org['root_id'];
-            $attrs[$name] = $this->orgProv->getIds($rootId);
+            $filter = $org['filter'] ?? null;
+            $attrs[$name] = $this->orgProv->getIds($rootId, $filter);
         }
 
         return $attrs;

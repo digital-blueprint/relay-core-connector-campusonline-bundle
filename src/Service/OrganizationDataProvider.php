@@ -10,6 +10,7 @@ use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 class OrganizationDataProvider implements LoggerAwareInterface
 {
@@ -56,8 +57,10 @@ class OrganizationDataProvider implements LoggerAwareInterface
      *
      * @return string[]
      */
-    public function getIds(string $rootOrgUnitId): array
+    public function getIds(string $rootOrgUnitId, ?string $filter): array
     {
+        $expressionLanguage = new ExpressionLanguage();
+
         $api = $this->getApi($rootOrgUnitId);
         /**
          * @var OrganizationUnitData[] $items
@@ -65,6 +68,11 @@ class OrganizationDataProvider implements LoggerAwareInterface
         $items = $api->OrganizationUnit()->getOrganizationUnits()->getItems();
         $ids = [];
         foreach ($items as $item) {
+            if ($filter !== null) {
+                if ($expressionLanguage->evaluate($filter, ['org' => $item]) === false) {
+                    continue;
+                }
+            }
             $ids[] = $item->getIdentifier();
         }
 
