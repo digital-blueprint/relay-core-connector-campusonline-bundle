@@ -43,7 +43,7 @@ class AuthorizationDataProvider implements AuthorizationDataProviderInterface, L
         return $names;
     }
 
-    public function getUserAttributes(string $userIdentifier): array
+    public function getUserAttributes(?string $userIdentifier): array
     {
         $attrs = [];
         $orgIds = $this->config['organization_ids'] ?? [];
