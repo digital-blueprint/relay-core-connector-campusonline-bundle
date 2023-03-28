@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace Dbp\Relay\CoreConnectorCampusonlineBundle\Service;
 
+use Dbp\CampusonlineApi\Helpers\ApiException;
 use Dbp\CampusonlineApi\LegacyWebService\Api;
 use Dbp\CampusonlineApi\LegacyWebService\Organization\OrganizationUnitData;
+use Dbp\Relay\CoreBundle\Exception\ApiError;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
+use Symfony\Component\HttpFoundation\Response;
 
 class OrganizationDataProvider implements LoggerAwareInterface
 {
@@ -62,10 +65,14 @@ class OrganizationDataProvider implements LoggerAwareInterface
         $expressionLanguage = new ExpressionLanguage();
 
         $api = $this->getApi($rootOrgUnitId);
-        /**
-         * @var OrganizationUnitData[] $items
-         */
-        $items = $api->OrganizationUnit()->getOrganizationUnits()->getItems();
+
+        try {
+            /** @var OrganizationUnitData[] $items */
+            $items = $api->OrganizationUnit()->getOrganizationUnits()->getItems();
+        } catch (ApiException $exception) {
+            throw ApiError::withDetails(Response::HTTP_BAD_GATEWAY, sprintf('Campusonline backend request failed: %s', $exception->getMessage()));
+        }
+
         $ids = [];
         foreach ($items as $item) {
             if ($filter !== null) {
