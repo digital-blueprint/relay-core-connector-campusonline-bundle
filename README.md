@@ -1,6 +1,6 @@
 # DbpRelayCoreConnectorCampusonlineBundle
 
-[GitLab](https://gitlab.tugraz.at/dbp/relay/dbp-relay-core-connector-campusonline-bundle) |
+[GitHub](https://github.com/digital-blueprint/relay-core-connector-campusonline-bundle) |
 [Packagist](https://packagist.org/packages/dbp/relay-core-connector-campusonline-bundle)
 
 ## Bundle installation
