@@ -37,10 +37,10 @@ class DbpRelayCoreConnectorCampusonlineExtension extends ConfigurableExtension
 
         $orgaProv = $container->getDefinition(OrganizationDataProvider::class);
         $orgaProv->addMethodCall('setConfig', [$mergedConfig['campus_online'] ?? []]);
-        $orgaProv->addMethodCall('setCache', [$organizationCache, 3600]);
+        $orgaProv->addMethodCall('setCache', [$organizationCache, 3600 * 24]);
 
         $authProv = $container->getDefinition(AuthorizationDataProvider::class);
         $authProv->addMethodCall('setConfig', [$mergedConfig]);
-        $authProv->addMethodCall('setCache', [$attrCache, 3600]);
+        $authProv->addMethodCall('setCache', [$attrCache, 3600 * 24]);
     }
 }
