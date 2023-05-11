@@ -48,5 +48,9 @@ class Kernel extends BaseKernel
         ]);
 
         $container->extension('dbp_relay_core_connector_campusonline', []);
+
+        $container->extension('api_platform', [
+            'metadata_backward_compatibility_layer' => false,
+        ]);
     }
 }
