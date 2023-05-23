@@ -2,7 +2,21 @@ services:
   Dbp\Relay\CoreConnectorCampusonlineBundle\Service\AuthorizationDataProvider:
     autowire: true
     autoconfigure: true
+    calls:
+      - setCache: [ '@dbp.relay.core_connector_campusonline.cache.attributes', 86400 ]
 
   Dbp\Relay\CoreConnectorCampusonlineBundle\Service\OrganizationDataProvider:
     autowire: true
     autoconfigure: true
+    calls:
+      - setCache: [ '@dbp.relay.core_connector_campusonline.cache.organizations', 86400 ]
+
+  dbp.relay.core_connector_campusonline.cache.organizations:
+    parent: cache.app
+    tags:
+      - { name: 'cache.pool', default_lifetime: 60 }
+
+  dbp.relay.core_connector_campusonline.cache.attributes:
+    parent: cache.app
+    tags:
+      - { name: 'cache.pool', default_lifetime: 60 }
