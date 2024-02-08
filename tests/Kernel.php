@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dbp\Relay\CoreConnectorCampusonlineBundle\Tests;
 
-use ApiPlatform\Core\Bridge\Symfony\Bundle\ApiPlatformBundle;
+use ApiPlatform\Symfony\Bundle\ApiPlatformBundle;
 use Dbp\Relay\CoreBundle\DbpRelayCoreBundle;
 use Dbp\Relay\CoreConnectorCampusonlineBundle\DbpRelayCoreConnectorCampusonlineBundle;
 use Nelmio\CorsBundle\NelmioCorsBundle;
