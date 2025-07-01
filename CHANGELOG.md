@@ -1,6 +1,6 @@
 # Changelog
 
-# v0.1.9
+# v0.1.10
 
 * Update core and adapt UserAttributeProvider
 
