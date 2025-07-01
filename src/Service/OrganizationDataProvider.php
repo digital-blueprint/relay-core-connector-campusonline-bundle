@@ -19,44 +19,28 @@ class OrganizationDataProvider implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
-    /**
-     * @var CacheItemPoolInterface
-     */
-    private $cachePool;
-
-    /** @var int */
-    private $cacheTTL;
-
-    private $config;
+    private ?CacheItemPoolInterface $cachePool = null;
+    private int $cacheTTL = 0;
+    private array $config = [];
 
     public function __construct()
     {
-        $this->config = [];
         $this->logger = new NullLogger();
     }
 
-    public function setCache(?CacheItemPoolInterface $cachePool, int $ttl)
+    public function setCache(?CacheItemPoolInterface $cachePool, int $ttl): void
     {
         $this->cachePool = $cachePool;
         $this->cacheTTL = $ttl;
     }
 
-    public function setConfig(array $config)
+    public function setConfig(array $config): void
     {
         $this->config = $config;
     }
 
-    private function getApi(string $rootOrgUnitId): Api
-    {
-        $baseUrl = $this->config['api_url'] ?? '';
-        $accessToken = $this->config['api_token'] ?? '';
-
-        return new Api($baseUrl, $accessToken, $rootOrgUnitId,
-            $this->logger, $this->cachePool, $this->cacheTTL);
-    }
-
     /**
-     * Returns a list of all origanization IDs including and below the passed ID.
+     * Returns a list of all organization IDs including and below the passed ID.
      *
      * @return string[]
      */
@@ -84,5 +68,14 @@ class OrganizationDataProvider implements LoggerAwareInterface
         }
 
         return $ids;
+    }
+
+    private function getApi(string $rootOrgUnitId): Api
+    {
+        $baseUrl = $this->config['api_url'] ?? '';
+        $accessToken = $this->config['api_token'] ?? '';
+
+        return new Api($baseUrl, $accessToken, $rootOrgUnitId,
+            $this->logger, $this->cachePool, $this->cacheTTL);
     }
 }

@@ -1,5 +1,5 @@
 services:
-  Dbp\Relay\CoreConnectorCampusonlineBundle\Service\AuthorizationDataProvider:
+  Dbp\Relay\CoreConnectorCampusonlineBundle\Service\UserAttributeProvider:
     autowire: true
     autoconfigure: true
     calls:

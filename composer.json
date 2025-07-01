@@ -6,8 +6,9 @@
     "require": {
         "php": ">=8.2",
         "ext-json": "*",
+        "api-platform/core": "^3.2",
         "dbp/campusonline-api": "^0.3.1",
-        "dbp/relay-core-bundle": "^0.1.186",
+        "dbp/relay-core-bundle": "^0.1.215",
         "symfony/framework-bundle": "^6.4",
         "psr/log": "^1.1.4 || ^2.0 || ^3.0",
         "symfony/config": "^6.4",

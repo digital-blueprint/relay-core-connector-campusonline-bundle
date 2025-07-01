@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Dbp\Relay\CoreConnectorCampusonlineBundle\DependencyInjection;
 
 use Dbp\Relay\CoreBundle\Extension\ExtensionTrait;
-use Dbp\Relay\CoreConnectorCampusonlineBundle\Service\AuthorizationDataProvider;
 use Dbp\Relay\CoreConnectorCampusonlineBundle\Service\OrganizationDataProvider;
+use Dbp\Relay\CoreConnectorCampusonlineBundle\Service\UserAttributeProvider;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -27,7 +27,7 @@ class DbpRelayCoreConnectorCampusonlineExtension extends ConfigurableExtension
         $orgaProv = $container->getDefinition(OrganizationDataProvider::class);
         $orgaProv->addMethodCall('setConfig', [$mergedConfig['campus_online'] ?? []]);
 
-        $authProv = $container->getDefinition(AuthorizationDataProvider::class);
+        $authProv = $container->getDefinition(UserAttributeProvider::class);
         $authProv->addMethodCall('setConfig', [$mergedConfig]);
     }
 }
