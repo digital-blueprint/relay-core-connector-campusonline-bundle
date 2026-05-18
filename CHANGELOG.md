@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.2.0
+
+* Port to the new CO public REST API.
+
 ## v0.1.11
 
 * Add support for Symfony 7.4
