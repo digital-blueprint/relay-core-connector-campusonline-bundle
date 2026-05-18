@@ -6,7 +6,7 @@
     "require": {
         "php": ">=8.2",
         "ext-json": "*",
-        "dbp/campusonline-api": "^0.3.1",
+        "dbp/campusonline-api": "^0.3.42",
         "dbp/relay-core-bundle": "^0.1.215",
         "symfony/framework-bundle": "^6.4 || ^7.4",
         "psr/log": "^1.1.4 || ^2.0 || ^3.0",

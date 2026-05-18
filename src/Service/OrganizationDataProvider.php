@@ -4,22 +4,21 @@ declare(strict_types=1);
 
 namespace Dbp\Relay\CoreConnectorCampusonlineBundle\Service;
 
-use Dbp\CampusonlineApi\Helpers\ApiException;
-use Dbp\CampusonlineApi\LegacyWebService\Api;
-use Dbp\CampusonlineApi\LegacyWebService\Organization\OrganizationUnitData;
-use Dbp\Relay\CoreBundle\Exception\ApiError;
-use Psr\Cache\CacheItemPoolInterface;
+use Dbp\CampusonlineApi\PublicRestApi\Connection;
+use Dbp\CampusonlineApi\PublicRestApi\Organizations\OrganizationApi;
+use Dbp\CampusonlineApi\PublicRestApi\Organizations\OrganizationResource;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 class OrganizationDataProvider implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
-    private ?CacheItemPoolInterface $cachePool = null;
+    private ?CacheInterface $cachePool = null;
     private int $cacheTTL = 0;
     private array $config = [];
 
@@ -28,7 +27,7 @@ class OrganizationDataProvider implements LoggerAwareInterface
         $this->logger = new NullLogger();
     }
 
-    public function setCache(?CacheItemPoolInterface $cachePool, int $ttl): void
+    public function setCache(?CacheInterface $cachePool, int $ttl): void
     {
         $this->cachePool = $cachePool;
         $this->cacheTTL = $ttl;
@@ -40,21 +39,45 @@ class OrganizationDataProvider implements LoggerAwareInterface
     }
 
     /**
+     * @return OrganizationResource[]
+     */
+    private function getAllOrganizations(): array
+    {
+        $api = $this->getApi();
+        $cursor = null;
+
+        $items = [];
+        while (true) {
+            $page = $api->getOrganizationsCursorBased(
+                ['only_active' => 'true', 'exclude_virtual' => 'true'],
+                cursor: $cursor, maxNumItems: 1000);
+            $items = array_merge($items, iterator_to_array($page->getResources()));
+            $cursor = $page->getNextCursor();
+            if ($cursor === null) {
+                break;
+            }
+        }
+
+        return $items;
+    }
+
+    /**
      * Returns a list of all organization IDs including and below the passed ID.
      *
      * @return string[]
      */
-    public function getIds(string $rootOrgUnitId, ?string $filter): array
+    public function getIds(?string $filter): array
     {
         $expressionLanguage = new ExpressionLanguage();
 
-        $api = $this->getApi($rootOrgUnitId);
+        if ($this->cachePool !== null) {
+            $items = $this->cachePool->get('ALL', function (ItemInterface $item) {
+                $item->expiresAfter($this->cacheTTL);
 
-        try {
-            /** @var OrganizationUnitData[] $items */
-            $items = $api->OrganizationUnit()->getOrganizationUnits()->getItems();
-        } catch (ApiException $exception) {
-            throw ApiError::withDetails(Response::HTTP_BAD_GATEWAY, sprintf('Campusonline backend request failed: %s', $exception->getMessage()));
+                return $this->getAllOrganizations();
+            });
+        } else {
+            $items = $this->getAllOrganizations();
         }
 
         $ids = [];
@@ -64,18 +87,21 @@ class OrganizationDataProvider implements LoggerAwareInterface
                     continue;
                 }
             }
-            $ids[] = $item->getIdentifier();
+            $ids[] = $item->getUid();
         }
 
         return $ids;
     }
 
-    private function getApi(string $rootOrgUnitId): Api
+    private function getApi(): OrganizationApi
     {
-        $baseUrl = $this->config['api_url'] ?? '';
-        $accessToken = $this->config['api_token'] ?? '';
+        $baseUrl = $this->config['base_url'] ?? '';
+        $clientId = $this->config['client_id'] ?? '';
+        $clientSecret = $this->config['client_secret'] ?? '';
 
-        return new Api($baseUrl, $accessToken, $rootOrgUnitId,
-            $this->logger, $this->cachePool, $this->cacheTTL);
+        $connection = new Connection($baseUrl, $clientId, $clientSecret);
+        $connection->setLogger($this->logger);
+
+        return new OrganizationApi($connection);
     }
 }

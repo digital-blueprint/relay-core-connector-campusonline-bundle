@@ -72,8 +72,7 @@ class UserAttributeProvider implements UserAttributeProviderInterface, LoggerAwa
     {
         foreach ($this->config['organization_ids'] ?? [] as $orgAttributeConfig) {
             if ($name === $orgAttributeConfig['name']) {
-                return $this->organizationDataProvider->getIds(
-                    $orgAttributeConfig['root_id'], $orgAttributeConfig['filter'] ?? null);
+                return $this->organizationDataProvider->getIds($orgAttributeConfig['filter'] ?? null);
             }
         }
 
